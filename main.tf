@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "eu-central-1"
+  region = "us-east-1"
 }
 
 provider "kubernetes" {
@@ -9,18 +9,37 @@ provider "kubernetes" {
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
   }
 }
 
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+
+  filter {
+    name = "availability-zone"
+    values = ["us-east-1d", "us-east-1f"]
+  }
+}
+
+locals {
+  lab_role_arn = "arn:aws:iam::536953741475:role/LabRole"
+}
+
 module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.0"
+  source = "./terraform-aws-eks"
 
   cluster_name    = "volcano-cluster"
   cluster_version = "1.24"
 
-  cluster_endpoint_public_access  = true
+  cluster_endpoint_public_access = true
 
   cluster_addons = {
     coredns = {
@@ -34,32 +53,32 @@ module "eks" {
     }
   }
 
-  vpc_id                   = "vpc-08e567a69b0fd3d96"
-  subnet_ids               = ["subnet-08432fd4b07230071", "subnet-0d36f59dc3bb36f14", "subnet-08432fd4b07230071"]
+  vpc_id     = data.aws_vpc.default.id
+  subnet_ids = data.aws_subnets.default.ids
+
+  kms_key_administrators = ["null"]
+  cluster_encryption_config = []
+  create_iam_role        = false
+  iam_role_arn           = local.lab_role_arn
+
+  eks_managed_node_group_defaults = {
+    create_iam_role = false
+    iam_role_arn    = local.lab_role_arn
+  }
 
   eks_managed_node_groups = {
     blue = {
-      min_size     = 1
+      min_size     = 2
       max_size     = 2
-      desired_size = 1
+      desired_size = 2
 
-      instance_types = ["t3.micro"]
+      instance_types = ["t3.medium"]
       capacity_type  = "SPOT"
     }
   }
 
   manage_aws_auth_configmap = true
-
-#  fargate_profiles = {
-#    default = {
-#      name = "default"
-#      selectors = [
-#        {
-#          namespace = "default"
-#        }
-#      ]
-#    }
-#  }
+  enable_irsa = false
 
   tags = {
     Environment = "dev"
