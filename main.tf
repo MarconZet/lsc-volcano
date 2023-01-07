@@ -24,7 +24,7 @@ data "aws_subnets" "default" {
   }
 
   filter {
-    name = "availability-zone"
+    name   = "availability-zone"
     values = ["us-east-1d", "us-east-1f"]
   }
 }
@@ -56,10 +56,10 @@ module "eks" {
   vpc_id     = data.aws_vpc.default.id
   subnet_ids = data.aws_subnets.default.ids
 
-  kms_key_administrators = ["null"]
+  kms_key_administrators    = ["null"]
   cluster_encryption_config = []
-  create_iam_role        = false
-  iam_role_arn           = local.lab_role_arn
+  create_iam_role           = false
+  iam_role_arn              = local.lab_role_arn
 
   eks_managed_node_group_defaults = {
     create_iam_role = false
@@ -78,7 +78,7 @@ module "eks" {
   }
 
   manage_aws_auth_configmap = true
-  enable_irsa = false
+  enable_irsa               = false
 
   tags = {
     Environment = "dev"
