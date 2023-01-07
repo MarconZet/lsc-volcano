@@ -1,0 +1,6 @@
+terraform-aws-eks
+.terraform.lock.hcl
+.terraform
+.idea
+terraform.tfstate
+terraform.tfstate.backup
