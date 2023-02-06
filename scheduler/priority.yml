@@ -4,12 +4,13 @@ metadata:
   name: pri-normal-job
 spec:
   minAvailable: 1
+  priorityClassName: low-priority
   schedulerName: volcano
   policies:
     - event: PodEvicted
       action: RestartJob
   tasks:
-    - replicas: 8
+    - replicas: 12
       name: nginx
       policies:
         - event: TaskCompleted
@@ -19,7 +20,7 @@ spec:
           containers:
             - command:
                 - sleep
-                - 10m
+                - 15s
               image: nginx:latest
               name: nginx
               resources:
@@ -41,7 +42,7 @@ spec:
     - event: PodEvicted
       action: RestartJob
   tasks:
-    - replicas: 8
+    - replicas: 6
       name: nginx
       policies:
         - event: TaskCompleted
@@ -51,7 +52,7 @@ spec:
           containers:
             - command:
                 - sleep
-                - 10m
+                - 15s
               image: nginx:latest
               name: nginx
               resources:

@@ -5,11 +5,13 @@ metadata:
   namespace: volcano-system
 data:
   volcano-scheduler.conf: |
-    actions: "enqueue, allocate, preempt, backfill"
+    actions: "enqueue, preempt, allocate, reclaim, backfill"
     tiers:
     - plugins:
       - name: priority
       - name: gang
+        enableJobStarving: false
+        enableReclaimable: false
         enablePreemptable: false
       - name: conformance
     - plugins:
