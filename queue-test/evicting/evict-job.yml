@@ -10,7 +10,7 @@ spec:
     - event: PodEvicted
       action: RestartJob
   tasks:
-    - replicas: 4
+    - replicas: 2
       name: nginx
       policies:
         - event: TaskCompleted
@@ -20,7 +20,7 @@ spec:
           containers:
             - command:
                 - sleep
-                - 10m
+                - 5m
               image: nginx:latest
               name: nginx
               resources:

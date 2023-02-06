@@ -1,12 +1,34 @@
-apiVersion: scheduling.volcano.sh/v1beta1
-kind: Queue
+apiVersion: batch.volcano.sh/v1alpha1
+kind: Job
 metadata:
-  name: qt-small-queue
+  name: qt-1-job
 spec:
-  weight: 1
-  reclaimable: false
-  capability:
-    cpu: 4
+  minAvailable: 1
+  schedulerName: volcano
+  queue: default
+  policies:
+    - event: PodEvicted
+      action: RestartJob
+  tasks:
+    - replicas: 2
+      name: nginx
+      policies:
+        - event: TaskCompleted
+          action: CompleteJob
+      template:
+        spec:
+          containers:
+            - command:
+                - sleep
+                - 10m
+              image: nginx:latest
+              name: nginx
+              resources:
+                requests:
+                  cpu: 1
+                limits:
+                  cpu: 1
+          restartPolicy: Never
 ---
 apiVersion: scheduling.volcano.sh/v1beta1
 kind: Queue
@@ -15,5 +37,3 @@ metadata:
 spec:
   weight: 4
   reclaimable: false
-  capability:
-    cpu: 4

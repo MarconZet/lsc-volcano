@@ -25,7 +25,5 @@ spec:
               name: nginx
               resources:
                 requests:
-                  cpu: 4
-                limits:
-                  cpu: 4
+                  cpu: 1
           restartPolicy: Never
