@@ -1,0 +1,62 @@
+apiVersion: batch.volcano.sh/v1alpha1
+kind: Job
+metadata:
+  name: pri-normal-job
+spec:
+  minAvailable: 1
+  schedulerName: volcano
+  policies:
+    - event: PodEvicted
+      action: RestartJob
+  tasks:
+    - replicas: 8
+      name: nginx
+      policies:
+        - event: TaskCompleted
+          action: CompleteJob
+      template:
+        spec:
+          containers:
+            - command:
+                - sleep
+                - 10m
+              image: nginx:latest
+              name: nginx
+              resources:
+                requests:
+                  cpu: 1
+                limits:
+                  cpu: 1
+          restartPolicy: Never
+---
+apiVersion: batch.volcano.sh/v1alpha1
+kind: Job
+metadata:
+  name: pri-priority-job
+spec:
+  minAvailable: 1
+  priorityClassName: high-priority
+  schedulerName: volcano
+  policies:
+    - event: PodEvicted
+      action: RestartJob
+  tasks:
+    - replicas: 8
+      name: nginx
+      policies:
+        - event: TaskCompleted
+          action: CompleteJob
+      template:
+        spec:
+          containers:
+            - command:
+                - sleep
+                - 10m
+              image: nginx:latest
+              name: nginx
+              resources:
+                requests:
+                  cpu: 1
+                limits:
+                  cpu: 1
+          restartPolicy: Never

@@ -31,6 +31,7 @@ data "aws_subnets" "default" {
 
 locals {
   lab_role_arn = "arn:aws:iam::536953741475:role/LabRole"
+  cluster_size = 4
 }
 
 module "eks" {
@@ -68,9 +69,9 @@ module "eks" {
 
   eks_managed_node_groups = {
     blue = {
-      min_size     = 2
-      max_size     = 2
-      desired_size = 2
+      min_size     = local.cluster_size
+      max_size     = local.cluster_size
+      desired_size = local.cluster_size
 
       instance_types = ["t3.medium"]
       capacity_type  = "SPOT"
