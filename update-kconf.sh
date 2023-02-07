@@ -10,5 +10,6 @@ helm install nginx-ingress ingress-nginx/ingress-nginx \
 
 # crate volcano
 kubectl apply -f https://raw.githubusercontent.com/volcano-sh/volcano/master/installer/volcano-development.yaml
-kubectl apply -f queue.yml
-kubectl apply -f job1.yml
+# kubectl apply -f queue.yml
+# kubectl apply -f job1.yml
+kubectl apply -f "MatrixMultiplicationMPI\mpi-matrix-multiplication.yaml"
